@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+.container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.leftSection {
+  flex-basis: 33.33%; 
+  background-color: #333;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  border: solid black 1px;
+}
+
+.rightSection {
+  flex-grow: 1; 
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+  flex: 2;
+}
+
+.logo {
+  font-size: 24px;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.gus {
+  color: white;
+
+}
+
+.alert {
+  color: red;
+}
+
+.welcomeText {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.loginButton, .registerButton {
+  padding: 10px 20px;
+  margin-top: 10px;
+  cursor: pointer;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  transition-duration: 0.4s;
+  border-radius: 5px;
+}
+
+.loginButton {
+  background-color: #06D6A0;
+  color: white;
+}
+
+.loginButton:hover {
+  background-color: #04b582;
+}
+
+.registerButton {
+  background-color: #FFD166;
+  color: white;
+}
+
+.registerButton:hover {
+  background-color: #fcbf49;
+}
+
+.input {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+}
+
+.form {
+  width: 80%;
+}
+.clickableLogo {
+  cursor: pointer;
+}
+.clickableLogo:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+  transition: transform 0.3s ease-in-out;
+}
+
+.welcomeText {
+  transition: transform 0.3s ease-in-out;
+}
+
+.welcomeText:hover {
+  transform: translateY(-5px);
+}
+.illustration {
+  max-width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.body {
+  font-family: 'Open Sans', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.logo {
+  font-family: 'Roboto', sans-serif; 
+  font-size: 36px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 2px;
+  transition: transform 0.3s ease-in-out, font-size 0.3s ease-in-out;
+  
+  padding: 5px 10px; /* Padding para dar espaço entre o texto e a borda */
+  border-radius: 5px; /* Arredondar os cantos da borda */
+}
+
+.logo:hover {
+  transform: scale(1.05); 
+  font-size: 38px; 
+}

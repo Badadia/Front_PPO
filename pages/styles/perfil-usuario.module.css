@@ -1,0 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+.perfilContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: linear-gradient(45deg, #333, #555);
+  color: #d8cfcf;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.perfilContainer h1, .perfilContainer h2 {
+  font-family: 'Roboto', sans-serif;
+  color: #FFD166;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.perfilContainer p, .perfilContainer input, .perfilContainer button, .perfilContainer a {
+  color: white;
+  margin: 10px 0;
+}
+
+.changePasswordSection {
+  margin-bottom: 20px;
+}
+
+.input, .textarea, .submitButton {
+  padding: 12px 20px;
+  width: 80%;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #333;
+  color: white;
+  transition: all 0.3s ease-in-out;
+}
+
+.submitButton {
+  background-color: #FFD166;
+  color: #333;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.submitButton:hover {
+  background-color: #fcbf49;
+}
