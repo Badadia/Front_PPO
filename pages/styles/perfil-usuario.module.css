@@ -12,41 +12,100 @@
   font-family: 'Open Sans', sans-serif;
 }
 
-.perfilContainer h1, .perfilContainer h2 {
+.perfilContainer h1 {
   font-family: 'Roboto', sans-serif;
   color: #FFD166;
   margin-bottom: 20px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
-.perfilContainer p, .perfilContainer input, .perfilContainer button, .perfilContainer a {
-  color: white;
-  margin: 10px 0;
-}
-
-.changePasswordSection {
-  margin-bottom: 20px;
-}
-
-.input, .textarea, .submitButton {
-  padding: 12px 20px;
-  width: 80%;
-  border: 2px solid #ccc;
-  border-radius: 4px;
+.configuracoesSection {
   background-color: #333;
-  color: white;
-  transition: all 0.3s ease-in-out;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 80%;
+  max-width: 800px;
 }
 
-.submitButton {
+.input, .textarea {
+  padding: 12px 20px;
+  width: 100%;
+  border: none;
+  border-bottom: 2px solid #FFD166;
+  background-color: transparent;
+  color: white;
+  margin-bottom: 15px; /* Espaçamento entre os campos de senha */
+}
+
+.input:focus, .textarea:focus {
+  border-color: #fcbf49;
+  outline: none;
+}
+
+.submitButton, .configButton {
   background-color: #FFD166;
   color: #333;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-weight: bold;
+  padding: 12px 20px;
+  margin-top: 10px;
+  margin-bottom: 20px; /* Espaçamento extra após os botões */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease-in-out, box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+  align-self: center; /* Centraliza os botões */
+}
+
+.submitButton:hover, .configButton:hover {
+  background-color: #fcbf49;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
+}
+
+.mensagemSucesso {
+  color: #4CAF50;
+  margin-top: 10px;
+}
+
+.gus, .alert {
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.gus {
+  color: white;
+}
+
+.alert {
+  color: red;
+}
+/* Adicione esses estilos no arquivo perfil-usuario.module.css */
+
+.perfilButton {
+  padding: 10px 20px;
+  background-color: #FFD166;
+  color: #333;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Espaço entre ícone e texto */
   transition: background-color 0.3s ease-in-out;
 }
 
-.submitButton:hover {
+.perfilButton:hover {
   background-color: #fcbf49;
+}
+
+.perfilButtonIcon {
+  font-size: 18px; /* Tamanho do ícone */
+}
+
+.buttonsContainer {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
 }

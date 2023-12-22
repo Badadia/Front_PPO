@@ -1,0 +1,94 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+.sobreContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(45deg, #333, #555);
+  color: #d8cfcf;
+  padding: 20px;
+}
+
+.logo {
+  font-family: 'Roboto', sans-serif;
+  font-size: 36px;
+  margin-bottom: 20px;
+  cursor: pointer;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 2px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: transform 0.3s ease-in-out, font-size 0.3s ease-in-out;
+}
+
+.clickableLogo:hover {
+  transform: scale(1.05);
+  font-size: 38px;
+}
+
+.content {
+  width: 80%;
+  max-width: 800px;
+  margin-top: 20px;
+  background-color: #333;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.content h2 {
+  font-size: 24px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #FFD166;
+}
+
+.teamSection, .aboutSiteSection {
+  margin-bottom: 20px;
+  padding-top: 20px;
+  color: #d8cfcf;
+}
+
+.teamMember {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.memberPhoto {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 20px;
+}
+
+.memberInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.memberInfo h3 {
+  margin: 0;
+  color: #FFD166;
+}
+
+.aboutSiteSection p {
+  margin-bottom: 10px;
+}
+
+/* Adicione estilos adicionais conforme necessário */
+.gus {
+    color: white;
+  }
+  
+  .alert {
+    color: red;
+  }
+  

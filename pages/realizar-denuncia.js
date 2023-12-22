@@ -1,148 +1,206 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios'; // Importando axios
-import styles from './styles/realizar-denuncia.module.css';
-import { motion } from 'framer-motion';
-import Link from 'next/link';
-import 'ol/ol.css';
-import { Map, View, Overlay } from 'ol';
-import TileLayer from 'ol/layer/Tile';
-import OSM from 'ol/source/OSM';
-import { fromLonLat, toLonLat } from 'ol/proj';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import { Point } from 'ol/geom';
-import { Icon, Style } from 'ol/style';
-import Feature from 'ol/Feature';
-import { useRouter } from 'next/router';
+import React, { useState, useEffect } from "react"
+import dynamic from "next/dynamic"
+import axios from "axios"
+import { useRouter } from "next/router"
+import styles from "./styles/realizar-denuncia.module.css"
+import Link from "next/link"
+import { motion } from "framer-motion"
+import { jwtDecode } from "jwt-decode"
+import { TOKEN_LOCAL } from "./core/axios.interceptor"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import {
+  faLightbulb,
+  faWater,
+  faRoad,
+  faTrash,
+} from "@fortawesome/free-solid-svg-icons"
 
-const RealizarDenuncia = () => {
-  const router = useRouter();
-  const [categoriaSelecionada, setCategoriaSelecionada] = useState(null);
-  const [detalhesVisiveis, setDetalhesVisiveis] = useState(false);
-  const [infoRua, setInfoRua] = useState('');
-  const [descricao, setDescricao] = useState('');
-  const [map, setMap] = useState(null);
-  const [localizacao, setLocalizacao] = useState(null);
+const MapComponentWithNoSSR = dynamic(() => import("./MapComponent"), {
+  ssr: false,
+  loading: () => <p>Carregando mapa...</p>,
+})
 
+const SolicitarServiço = () => {
+  const router = useRouter()
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState(null)
+  const [infoRua, setInfoRua] = useState("")
+  const [descricao, setDescricao] = useState("")
+  const [localizacao, setLocalizacao] = useState({ lat: null, lon: null })
+  const [foto, setFoto] = useState(null)
+  const [bairro, setBairro] = useState("")
+
+  const categoriaIcones = {
+    Iluminacao: faLightbulb,
+    Esgoto: faWater,
+    Buraco: faRoad,
+    Entulho: faTrash,
+  }
   useEffect(() => {
-
-    const token = localStorage.getItem('userToken');
+    const token = localStorage.getItem(TOKEN_LOCAL)
     if (!token) {
-      router.push('/login');
     }
-    if (detalhesVisiveis) {
-      const initialMap = new Map({
-        target: 'map',
-        layers: [
-          new TileLayer({
-            source: new OSM()
-          })
-        ],
-        view: new View({
-          center: fromLonLat([-36.4966, -8.8829]),
-          zoom: 13,
-          maxZoom: 17,
-          minZoom: 11
-        })
-      });
+  }, [router])
 
-      initialMap.on('singleclick', handleMapClick);
-      setMap(initialMap);
-    }
-  }, [detalhesVisiveis, router]);
+  const categorias = {
+    "Poste sem luz": "Iluminacao",
+    "Esgoto exposto": "Esgoto",
+    "Buraco na rua": "Buraco",
+    "Coletar entulho": "Entulho",
+  }
 
   const handleCategoriaClick = (categoria) => {
-    setCategoriaSelecionada(categoria);
-    setDetalhesVisiveis(true);
-  };
+    setCategoriaSelecionada(categorias[categoria])
+  }
 
-  const getStreetInfo = async (coordinate) => {
-    try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coordinate[1]}&lon=${coordinate[0]}`);
-      const data = await response.json();
-      setInfoRua(data.display_name);
-    } catch (error) {
-      console.error('Erro ao buscar informações da rua:', error);
+  const handleBuscarEndereco = async () => {
+    if (!infoRua) {
+      alert("Por favor, digite um endereço.")
+      return
     }
-  };
 
-  const handleMapClick = (event) => {
-    if (!map) return;
-    const clickedCoordinate = toLonLat(event.coordinate);
-    getStreetInfo(clickedCoordinate);
-    setLocalizacao(clickedCoordinate);
-    const marker = new Feature({
-      geometry: new Point(event.coordinate)
-    });
-    marker.setStyle(new Style({
-      image: new Icon({
-        src: '/marcador.png',
-        scale: 0.1
-      })
-    }));
-    const vectorLayer = new VectorLayer({
-      source: new VectorSource({
-        features: [marker]
-      })
-    });
-    map.addLayer(vectorLayer);
-  };
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          infoRua
+        )}`
+      )
+      const data = await response.json()
+
+      if (data.length === 0) {
+        alert("Endereço não encontrado.")
+        return
+      }
+
+      const { lat, lon } = data[0]
+      setLocalizacao({ lat, lon })
+      setInfoRua(data[0].display_name)
+    } catch (error) {
+      console.error("Erro ao buscar endereço:", error)
+      alert("Erro ao buscar o endereço.")
+    }
+  }
 
   const handleEnviarDenuncia = async () => {
-    try {
-      const denunciaData = {
-        categoria: categoriaSelecionada,
-        descricao,
-        localizacao
-      };
-      await axios.post('http://localhost:3000/api/denuncias', denunciaData);
-     
-      setMensagemSucesso('Serviço solicitado com sucesso.');
-    } catch (error) {
-      console.error('Erro ao enviar denúncia:', error);
-      setMensagemSucesso('');
+    if (
+      !localizacao.lat ||
+      !localizacao.lon ||
+      !categoriaSelecionada ||
+      !descricao ||
+      !infoRua
+    ) {
+      alert("Por favor, preencha todos os campos.")
+      return
     }
-  };
+
+    const token = localStorage.getItem(TOKEN_LOCAL)
+    const decodedToken = jwtDecode(token)
+    const userId = decodedToken.sub
+
+    const formData = new FormData()
+    formData.append("tipo", categoriaSelecionada)
+    formData.append("endereco", `${infoRua}, ${bairro}`)
+    formData.append("descricao", descricao)
+    formData.append("latitude", localizacao.lat)
+    formData.append("longitude", localizacao.lon)
+
+    if (foto) {
+      formData.append("foto", foto)
+    }
+    try {
+      await axios.post("http://localhost:3001/services", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      alert("Solicitação enviada com sucesso!")
+      router.push("/minhas-denuncias")
+    } catch (error) {
+      console.error("Erro no envio da solicitação:", error)
+      alert("Erro no envio da solicitação .")
+    }
+  }
+
+  const handleFileChange = (event) => {
+    setFoto(event.target.files[0])
+  }
+
   return (
     <div className={styles.container}>
-      <motion.div className={styles.logo} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+      <motion.div
+        className={styles.logo}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+      >
         <Link href="/">
-          <h1 className={styles.logo}>
-            <span className={styles.gus}>Gus</span>
-            <span className={styles.alert}>Alert</span>
-          </h1>
+          <span className={styles.gus}>Gus</span>
+          <span className={styles.alert}>Alert</span>
         </Link>
       </motion.div>
+
       <div className={styles.introText}>
-        Selecione a categoria da denúncia para continuar:
+        Selecione a categoria do serviço para continuar:
       </div>
+
       <div className={styles.categorias}>
-        {['Poste sem luz', 'Esgoto exposto', 'Buraco na rua', 'Coletar entulho'].map((categoria) => (
+        {Object.keys(categorias).map((categoria) => (
           <motion.button
             key={categoria}
-            className={`${styles.categoria} ${categoriaSelecionada === categoria ? styles.categoriaSelecionada : ''}`}
+            className={`${styles.categoria} ${
+              categoriaSelecionada === categorias[categoria]
+                ? styles.categoriaSelecionada
+                : ""
+            }`}
             onClick={() => handleCategoriaClick(categoria)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
-            {categoria}
+            <FontAwesomeIcon icon={categoriaIcones[categorias[categoria]]} />
+            {" " + categoria}
           </motion.button>
         ))}
       </div>
-      {detalhesVisiveis && (
-        <motion.div className={styles.detalhesDenuncia} initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <input className={styles.input} type="text" placeholder="Endereço do problema" value={infoRua} />
-          <textarea className={styles.textarea} placeholder="Descreva o problema"></textarea>
-          <input className={styles.inputFile} type="file" accept="image/*" />
-          <div id="map" className={styles.mapPlaceholder}>Localização no mapa</div>
 
-          <motion.button className={styles.submitButton} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-            Enviar denúncia
+      {categoriaSelecionada && (
+        <motion.div
+          className={styles.detalhesDenuncia}
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <input
+            className={styles.input}
+            type="text"
+            placeholder="Endereço do problema"
+            value={infoRua}
+            readOnly
+          />
+
+          <textarea
+            className={styles.textarea}
+            placeholder="Descreva o problema"
+            value={descricao}
+            onChange={(e) => setDescricao(e.target.value)}
+          />
+
+          <input type="file" accept="image/*" onChange={handleFileChange} />
+
+          <div id="map" className={styles.mapPlaceholder}>
+            <MapComponentWithNoSSR setInfoRua={setInfoRua} />
+          </div>
+
+          <motion.button
+            className={styles.submitButton}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleEnviarDenuncia}
+          >
+            Enviar Solicitação
           </motion.button>
         </motion.div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default RealizarDenuncia;
+export default SolicitarServiço

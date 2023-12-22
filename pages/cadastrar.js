@@ -2,13 +2,12 @@ import React, { useState } from "react"
 import Link from "next/link"
 import styles from "./styles/cadastrar.module.css"
 import { motion } from "framer-motion"
-import appAxios from "./core/axios.interceptor"
-import { useRouter } from 'next/router';
-
+import appAxios, { TOKEN_LOCAL } from "./core/axios.interceptor"
+import { useRouter } from "next/router"
+import { jwtDecode } from "jwt-decode"
 
 const Cadastrar = () => {
-  const router = useRouter(); 
-
+  const router = useRouter()
   const [formData, setFormData] = useState({
     nome: "",
     email: "",
@@ -16,6 +15,8 @@ const Cadastrar = () => {
     senha: "",
     confirmarSenha: "",
   })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -28,27 +29,31 @@ const Cadastrar = () => {
       return
     }
 
+    const telefone = formData.telefone
+    const parsedFone = parseInt(telefone)
     try {
-      const telefone = formData.telefone
-      const parsedFone = parseInt(telefone)
-
+      setLoading(true)
       const user = {
         nome: formData.nome,
         telefone: parsedFone,
         email: formData.email,
         senha: formData.senha,
       }
-      appAxios
-        .post("/user", user)
-        .then((res) => console.log(res.data))
-        .catch((res) => console.log(res.response.data))
-        router.push('/');
-   
-      } catch (error) {
+
+      const response = await appAxios.post("/user", user)
+      const token = response
+
+      if (token) {
+        router.push("/login")
+      } else {
+        setError("Token não recebido.")
+      }
+    } catch (error) {
+      setLoading(false)
+      setError("Erro ao cadastrar. Tente novamente.")
       console.error("Erro ao cadastrar:", error)
     }
   }
-
   return (
     <motion.div
       className={styles.container}
@@ -82,6 +87,7 @@ const Cadastrar = () => {
           </span>
         </p>
         <form className={styles.form} onSubmit={handleSubmit}>
+          {/* Campos de entrada */}
           <motion.input
             className={styles.input}
             type="text"
@@ -143,7 +149,7 @@ const Cadastrar = () => {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            Cadastrar
+            {loading ? "Cadastrando..." : "Cadastrar"}
           </motion.button>
         </form>
       </div>

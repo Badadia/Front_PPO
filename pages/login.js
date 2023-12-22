@@ -1,50 +1,46 @@
-import React, { useState } from "react"
-import Link from "next/link"
-import styles from "./styles/login.module.css"
-import { motion } from "framer-motion"
-import appAxios, { TOKEN_LOCAL } from "./core/axios.interceptor"
-import { useRouter } from "next/router"; 
+import React, { useState } from "react";
+import Link from "next/link";
+import styles from "./styles/login.module.css";
+import { motion } from "framer-motion";
+import appAxios from "./core/axios.interceptor";
+import { useRouter } from "next/router";
+import { useAuth } from '../src/app/components/contexts/AuthContext';
+
+
 
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    senha: "",
-  })
+  const [formData, setFormData] = useState({ email: "", senha: "" });
+  const [loginError, setLoginError] = useState("");
+  const { login } = useAuth();
+  const router = useRouter();
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    })
-  }
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-
+    e.preventDefault();
     try {
-      const router = useRouter();
+      const response = await appAxios.post("/login", formData);
+      const token = response.headers.authorization;
 
-      const user = {
+      
+      if (token) {
+        login(token); 
+        router.push("/"); 
+      } else {
         
-        email: formData.email,
-        senha: formData.senha,
+        setLoginError("Erro ao fazer login. Tente novamente.");
       }
-      appAxios
-        .post("/login", user)
-        .then((res) => {
-          const token = res.headers.authorization
-          console.log(token)
-          if (token) localStorage.setItem(TOKEN_LOCAL, JSON.stringify(token))
-          //TODO: no logout => localStorage.removeItem(TOKEN_LOCAL)
-        })
-        .catch((res) => console.log(res))
-        router.push('/');
-    } 
-     catch (error) {
-      console.error("Erro ao efetuar login:", error)
+     } catch (error) {
+      if (error.response && error.response.status === 401) {
+        setLoginError("Senha incorreta ou usuário não encontrado.");
+      } else {
+        setLoginError("Ocorreu um erro ao fazer login. Tente novamente.");
+      }
     }
-  }
+  };
 
   return (
     <motion.div
@@ -73,7 +69,6 @@ const Login = () => {
           Bem-vindo!
         </motion.h2>
         <p>
-          {" "}
           <span className={styles.link}>
             É novo por aqui? <Link href="/cadastrar">Cadastra-se</Link> no nosso
             site!
@@ -104,6 +99,8 @@ const Login = () => {
             transition={{ delay: 0.5, type: "spring", stiffness: 120 }}
           />
 
+          {loginError && <div className={styles.error}>{loginError}</div>}
+
           <motion.button
             className={styles.loginButton}
             type="submit"
@@ -122,7 +119,7 @@ const Login = () => {
         />
       </div>
     </motion.div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

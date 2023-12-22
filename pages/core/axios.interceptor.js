@@ -3,7 +3,7 @@ import axios from "axios"
 export const TOKEN_LOCAL = "token"
 
 const appAxios = axios.create({
-  baseURL: "http://localhost:3000", // Replace with your API base URL
+  baseURL: "http://localhost:3001", // Replace with your API base URL
 })
 
 // Request interceptor
