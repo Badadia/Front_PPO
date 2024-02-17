@@ -1,82 +1,85 @@
-import React, { useEffect, useState } from 'react';
-import 'ol/ol.css';
-import { Map, View } from 'ol';
-import TileLayer from 'ol/layer/Tile';
-import OSM from 'ol/source/OSM';
-import VectorLayer from 'ol/layer/Vector';
-import VectorSource from 'ol/source/Vector';
-import { Icon, Style } from 'ol/style';
-import Point from 'ol/geom/Point';
-import Feature from 'ol/Feature';
-import { useGeographic } from 'ol/proj';
+import React, { useEffect, useRef } from "react"
+import L from "leaflet"
+import "leaflet/dist/leaflet.css"
 
-const MapComponent = ({ setInfoRua }) => {
-  const [localizacao, setLocalizacao] = useState({ lat: -8.8829, lon: -36.4966 });
+const MapComponent = ({
+  localizacaoInicial,
+  readOnly,
+  setLocalizacao,
+  setInfoRua,
+}) => {
+  const mapRef = useRef(null)
 
   useEffect(() => {
-    useGeographic();
+    const initialLat = localizacaoInicial?.lat ?? -8.8829
+    const initialLon = localizacaoInicial?.lon ?? -36.4966
 
-    const initialCoordinates = [-36.4966, -8.8829];
+    const map = L.map(mapRef.current).setView([initialLat, initialLon], 13)
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; Contribuidores do OpenStreetMap",
+    }).addTo(map)
 
-    const map = new Map({
-      target: 'ol-map',
-      layers: [
-        new TileLayer({
-          source: new OSM(),
-        }),
-      ],
-      view: new View({
-        center: initialCoordinates,
-        zoom: 13,
-      }),
-    });
+    const customIcon = L.icon({
+      iconUrl: "/marcador.png",
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+    })
 
-    const iconFeature = new Feature({
-      geometry: new Point(initialCoordinates),
-    });
+    const marker = L.marker([initialLat, initialLon], {
+      icon: customIcon,
+      draggable: !readOnly,
+    }).addTo(map)
 
-    const iconStyle = new Style({
-      image: new Icon({
-        anchor: [0.5, 1],
-        src: 'marcador.png',
-        scale: 0.5,
-      }),
-    });
+    if (localizacaoInicial) {
+      marker.setLatLng(new L.LatLng(initialLat, initialLon))
+      map.setView(new L.LatLng(initialLat, initialLon), 13)
+    }
 
-    iconFeature.setStyle(iconStyle);
+    if (readOnly) {
+      map.dragging.disable()
+      map.touchZoom.disable()
+      map.doubleClickZoom.disable()
+      map.scrollWheelZoom.disable()
+      map.boxZoom.disable()
+      map.keyboard.disable()
+      if (map.tap) map.tap.disable()
+      marker.draggable = false
+    } else {
+      marker.on("dragend", function (e) {
+        const { lat, lng } = e.target.getLatLng()
+        setLocalizacao({ lat, lon: lng })
+        fetchInfoRua(lat, lng)
+      })
 
-    const vectorSource = new VectorSource({
-      features: [iconFeature],
-    });
+      map.on("click", function (e) {
+        const { lat, lng } = e.latlng
+        marker.setLatLng([lat, lng])
+        setLocalizacao({ lat, lon: lng })
+        fetchInfoRua(lat, lng)
+      })
+    }
 
-    const vectorLayer = new VectorLayer({
-      source: vectorSource,
-    });
+    const fetchInfoRua = async (lat, lng) => {
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+        )
+        const data = await response.json()
+        const rua = data.address.road || "Rua não encontrada"
+        const bairro = data.address.suburb || "Bairro não encontrado"
+        setInfoRua(`${rua}, ${bairro}`)
+      } catch (err) {
+        console.error("Erro ao buscar informações da rua:", err)
+      }
+    }
 
-    map.addLayer(vectorLayer);
+    return () => {
+      map.remove()
+    }
+  }, [localizacaoInicial, readOnly, setLocalizacao, setInfoRua])
 
-    map.on('singleclick', function (evt) {
-      const coordinate = evt.coordinate;
-      iconFeature.setGeometry(new Point(coordinate));
-      setLocalizacao({ lat: coordinate[1], lon: coordinate[0] });
+  return <div ref={mapRef} style={{ height: "400px", width: "100%" }} />
+}
 
-      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${coordinate[1]}&lon=${coordinate[0]}`)
-        .then(response => response.json())
-        .then(data => {
-          const rua = data.address.road || 'Rua não encontrada';
-          const bairro = data.address.suburb || 'Bairro não encontrado';
-          setInfoRua(`${rua}, ${bairro}`);
-        })
-        .catch(err => console.error('Erro ao buscar informações da rua:', err));
-    });
-  }, [setLocalizacao, setInfoRua]);
-
-  return (
-    <div>
-      <div id="ol-map" style={{ height: '400px', width: '100%' }} />
-      <div>Coordenadas: {localizacao.lat.toFixed(4)}, {localizacao.lon.toFixed(4)}</div>
-    </div>
-  );
-};
-
-export default MapComponent;
+export default MapComponent

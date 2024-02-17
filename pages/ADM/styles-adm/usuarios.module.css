@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
 
 .container {
   display: flex;
@@ -13,7 +13,7 @@
 }
 
 .logo {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   font-size: 36px;
   margin-bottom: 20px;
   cursor: pointer;
@@ -56,14 +56,15 @@
   color: white;
   text-decoration: none;
   padding: 10px 20px;
-  background-color: #E63946;
+  background-color: #e63946;
   border-radius: 5px;
   transition: background-color 0.3s ease-in-out;
   cursor: pointer;
+  margin-top: 10px;
 }
 
 .excluir:hover {
-  background-color: #D62839;
+  background-color: #d62839;
 }
 
 .Containerblock {
@@ -72,7 +73,7 @@
   align-items: center;
   justify-content: center;
   width: 80%;
-  background-color: #CED4DA;
+  background-color: #fcbf49;
   padding: 20px;
   border-radius: 10px;
   margin-top: 15px;
@@ -81,7 +82,7 @@
 }
 
 .Containerblock:hover {
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 12px rgba(243, 239, 4, 0.3);
 }
 
 .Containerblock h2 {
@@ -92,4 +93,21 @@
 .Containerblock p {
   color: #333;
   margin-bottom: 5px;
+}
+.status {
+  color: black;
+}
+.verMaisButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 20px;
+  background-color: #007bff; 
+  color: white; 
+  cursor: pointer;
+  margin-top: 20px; 
+  font-size: 1rem;
+}
+
+.verMaisButton:hover {
+  background-color: #0056b3; 
 }

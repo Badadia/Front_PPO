@@ -28,6 +28,7 @@ const SolicitarServiço = () => {
   const [localizacao, setLocalizacao] = useState({ lat: null, lon: null })
   const [foto, setFoto] = useState(null)
   const [bairro, setBairro] = useState("")
+  const [complemento, setComplemento] = useState("")
 
   const categoriaIcones = {
     Iluminacao: faLightbulb,
@@ -102,9 +103,11 @@ const SolicitarServiço = () => {
     formData.append("descricao", descricao)
     formData.append("latitude", localizacao.lat)
     formData.append("longitude", localizacao.lon)
+    formData.append("complemento", complemento)
+    console.log(localizacao)
 
     if (foto) {
-      formData.append("foto", foto)
+      formData.append("file", foto)
     }
     try {
       await axios.post("http://localhost:3001/services", formData, {
@@ -137,7 +140,7 @@ const SolicitarServiço = () => {
           <span className={styles.alert}>Alert</span>
         </Link>
       </motion.div>
-
+      
       <div className={styles.introText}>
         Selecione a categoria do serviço para continuar:
       </div>
@@ -160,7 +163,7 @@ const SolicitarServiço = () => {
           </motion.button>
         ))}
       </div>
-
+      <div className={styles.formWrapper}>
       {categoriaSelecionada && (
         <motion.div
           className={styles.detalhesDenuncia}
@@ -168,13 +171,20 @@ const SolicitarServiço = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <input
+           <input
             className={styles.input}
             type="text"
             placeholder="Endereço do problema"
             value={infoRua}
-            readOnly
           />
+ <input
+            className={styles.input}
+            type="text"
+            placeholder="Complemento"
+            value={complemento}
+            onChange={(e) => setComplemento(e.target.value)}
+          />
+
 
           <textarea
             className={styles.textarea}
@@ -183,11 +193,21 @@ const SolicitarServiço = () => {
             onChange={(e) => setDescricao(e.target.value)}
           />
 
-          <input type="file" accept="image/*" onChange={handleFileChange} />
-
-          <div id="map" className={styles.mapPlaceholder}>
-            <MapComponentWithNoSSR setInfoRua={setInfoRua} />
+<label htmlFor="fotoProblema">Anexe uma foto do problema:</label>
+  <input
+    type="file"
+    id="fotoProblema"
+    accept="image/*" 
+    onChange={handleFileChange}
+  />
+                 
+      Marque a localização do problema no mapa: <div id="map" className={styles.mapPlaceholder}> 
+            <MapComponentWithNoSSR
+              setLocalizacao={setLocalizacao}
+              setInfoRua={setInfoRua}
+            />
           </div>
+         
 
           <motion.button
             className={styles.submitButton}
@@ -199,6 +219,7 @@ const SolicitarServiço = () => {
           </motion.button>
         </motion.div>
       )}
+    </div>
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useCallback } from "react"
 import Link from "next/link"
 import axios from "axios"
 import styles from "./styles-adm/solicitações.module.css" // Ajuste para o caminho correto
@@ -9,11 +9,11 @@ import { jwtDecode } from "jwt-decode"
 import { TOKEN_LOCAL } from "../core/axios.interceptor"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEye, faWrench, faTools } from "@fortawesome/free-solid-svg-icons"
-
-const MapComponentWithNoSSR = dynamic(() => import("../MapComponent"), {
-  ssr: false,
-  loading: () => <p>Carregando mapa...</p>,
-})
+import {
+  faCheckCircle,
+  faTimesCircle,
+  faSpinner,
+} from "@fortawesome/free-solid-svg-icons"
 
 const MinhasDenuncias = () => {
   const router = useRouter()
@@ -28,6 +28,38 @@ const MinhasDenuncias = () => {
   const [detalheServicoId, setDetalheServicoId] = useState(null)
   const [exibirMaisDenuncias, setExibirMaisDenuncias] = useState(false)
   const [exibirMaisServicos, setExibirMaisServicos] = useState(false)
+  const [mostrarDetalhes, setMostrarDetalhes] = useState({})
+
+  const fetchServicos = useCallback(async () => {
+    try {
+      const response = await axios.get(`http://localhost:3001/services`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem(TOKEN_LOCAL)}`,
+        },
+      })
+      setServicos(response.data)
+    } catch (error) {
+      console.error("Erro ao buscar serviços:", error)
+    }
+  }, [])
+
+  const fetchDenuncias = useCallback(async () => {
+    try {
+      const response = await axios.get(`http://localhost:3001/complaints`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem(TOKEN_LOCAL)}`,
+        },
+      })
+      setDenuncias(response.data)
+    } catch (error) {
+      console.error("Erro ao buscar denúncias:", error)
+    }
+  }, [])
+
+  const MapComponentWithNoSSR = dynamic(() => import("../MapComponent"), {
+    ssr: false,
+    loading: () => <p>Carregando mapa...</p>,
+  })
 
   useEffect(() => {
     const token = localStorage.getItem(TOKEN_LOCAL)
@@ -100,6 +132,8 @@ const MinhasDenuncias = () => {
   const filteredServicos = servicos.filter((servico) =>
     servico.tipo.toLowerCase().includes(filtro.toLowerCase())
   )
+
+  console.log(filteredDenuncias)
   const statusS = (status, id) => {
     const fetchStatusS = async () => {
       try {
@@ -114,7 +148,6 @@ const MinhasDenuncias = () => {
             },
           }
         )
-        router.push("/")
       } catch (error) {
         console.error("Erro ao alterar o status do serviço:", error)
       }
@@ -135,7 +168,6 @@ const MinhasDenuncias = () => {
             },
           }
         )
-        router.push("/")
       } catch (error) {
         console.error("Erro ao alterar status da denúncia:", error)
       }
@@ -145,12 +177,13 @@ const MinhasDenuncias = () => {
   const delS = (id) => {
     const fetchDels = async () => {
       try {
-        await axios.delete(`http://localhost:3001/services/` + id, {
+        await axios.delete(`http://localhost:3001/services/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem(TOKEN_LOCAL)}`,
           },
         })
-        router.push("/")
+
+        fetchServicos()
       } catch (error) {
         console.error("Erro ao deletar serviço:", error)
       }
@@ -160,17 +193,27 @@ const MinhasDenuncias = () => {
   const delD = (id) => {
     const fetchDelD = async () => {
       try {
-        await axios.delete(`http://localhost:3001/complaints/` + id, {
+        await axios.delete(`http://localhost:3001/complaints/${id}`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem(TOKEN_LOCAL)}`,
           },
         })
-        router.push("/")
+
+        fetchDenuncias()
       } catch (error) {
         console.error("Erro ao deletar denúncias:", error)
       }
     }
     fetchDelD()
+  }
+  const toggleVerificarD = () => {
+    setVerificarD(!verificarD)
+    setVerificarS(false)
+  }
+
+  const toggleVerificarS = () => {
+    setVerificarS(!verificarS)
+    setVerificarD(false)
   }
 
   return (
@@ -190,7 +233,17 @@ const MinhasDenuncias = () => {
           <span className={styles.alert}>Alert</span>
         </motion.h1>
       </Link>
-      <h1 className={styles.title}>Minhas Solicitações</h1>
+      <h1 className={styles.title}>Solicitações</h1>
+      <div className={styles.buttonsContainer}>
+        <motion.button className={styles.verButton} onClick={toggleVerificarS}>
+          <FontAwesomeIcon icon={faWrench} className={styles.verButtonIcon} />
+          Ver Serviços
+        </motion.button>
+        <motion.button className={styles.verButton} onClick={toggleVerificarD}>
+          <FontAwesomeIcon icon={faEye} className={styles.verButtonIcon} />
+          Ver Denúncias
+        </motion.button>
+      </div>
       <input
         type="text"
         placeholder="Filtrar solicitações..."
@@ -204,14 +257,11 @@ const MinhasDenuncias = () => {
           {filteredDenuncias
             .slice(0, exibirMaisDenuncias ? filteredDenuncias.length : 8)
             .map((denuncia) => (
-              <motion.div
-                key={denuncia.id}
-                className={styles.denunciaCard}
-                initial={{ x: "-100vw" }}
-                animate={{ x: 0 }}
-                transition={{ delay: 0.2, type: "spring", stiffness: 120 }}
-              >
-                <h2 className={styles.denunciaTitle}>{denuncia.tipo}</h2>
+              <motion.div key={denuncia.id} className={styles.card}>
+                <h2 className={styles.cardTitle}>{denuncia.setor}</h2>
+                <p className={styles.userInfo}>
+                  Usuário: {denuncia.user.nome} (ID: {denuncia.user.id})
+                </p>
 
                 <p
                   className={styles.detailsLink}
@@ -224,24 +274,38 @@ const MinhasDenuncias = () => {
                 </p>
                 {detalheDenunciaId === denuncia.id && (
                   <div className={styles.detalhes}>
-                    <p>Endereço: {denuncia.endereco}</p>
+                    <p className={styles.cardDescription}>
+                      Descrição: {denuncia.descricao}
+                    </p>
+                    <p className={styles.status}>
+                      Endereço: {denuncia.endereco}
+                    </p>
+                    <p className={styles.complemento}>
+                      Complemento: {denuncia.complemento}
+                    </p>
                     <img
-                      src={denuncia.foto}
+                      src={"http://localhost:3001/uploads/" + denuncia.imageUrl}
                       alt="Foto da Denúncia"
                       className={styles.denunciaFoto}
                     />
-                    <div className={styles.mapContainer}>
-                      <MapComponentWithNoSSR
-                        localizacaoInicial={{
-                          lat: denuncia.latitude,
-                          lon: denuncia.longitude,
-                        }}
-                        readOnly={true}
-                      />
-                    </div>
+
+                    {denuncia.location && (
+                      <div className={styles.mapPlaceholder}>
+                        <MapComponentWithNoSSR
+                          localizacaoInicial={{
+                            lat: denuncia.location.coordinates[1],
+                            lon: denuncia.location.coordinates[0],
+                          }}
+                          readOnly={true}
+                        />
+                      </div>
+                    )}
                     <div>
-                      <label htmlFor="Status">Status:</label>
+                      <label className={styles.status} htmlFor="Status">
+                        Status:
+                      </label>
                       <select
+                        className={styles.status}
                         name="Status"
                         id={"Status"}
                         onChange={(e) => {
@@ -277,23 +341,24 @@ const MinhasDenuncias = () => {
                         )}
                       </select>
                     </div>
-                    <p className={styles.denunciaDescription}>
-                      {denuncia.descricao}
-                    </p>
-                    <motion.button
-                      onClick={() => {
-                        statusD(statusDen, denuncia.id)
-                      }}
-                    >
-                      Alterar
-                    </motion.button>
-                    <motion.button
-                      onClick={() => {
-                        delD(denuncia.id)
-                      }}
-                    >
-                      Excluir
-                    </motion.button>
+                    <div className={styles.statusButtons}>
+                      <motion.button
+                        className={styles.submitButton}
+                        onClick={() => {
+                          statusD(statusDen, denuncia.id)
+                        }}
+                      >
+                        Alterar
+                      </motion.button>
+                      <motion.button
+                        className={styles.deleteButton}
+                        onClick={() => {
+                          delD(denuncia.id)
+                        }}
+                      >
+                        Excluir
+                      </motion.button>
+                    </div>
                   </div>
                 )}
               </motion.div>
@@ -303,36 +368,18 @@ const MinhasDenuncias = () => {
           )}
         </div>
       )}
-      <div className={styles.buttonsContainer}>
-        <motion.button
-          className={styles.verButton}
-          onClick={() => setVerificarS(!verificarS)}
-        >
-          <FontAwesomeIcon icon={faWrench} className={styles.verButtonIcon} />
-          Ver Serviços
-        </motion.button>
-        <motion.button
-          className={styles.verButton}
-          onClick={() => setVerificarD(!verificarD)}
-        >
-          <FontAwesomeIcon icon={faEye} className={styles.verButtonIcon} />
-          Ver Denúncias
-        </motion.button>
-      </div>
 
       {verificarS && (
         <div className={styles.servicosList}>
           {filteredServicos
             .slice(0, exibirMaisServicos ? filteredServicos.length : 8)
             .map((servico) => (
-              <motion.div
-                key={servico.id}
-                className={styles.servicoCard}
-                initial={{ x: "-100vw" }}
-                animate={{ x: 0 }}
-                transition={{ delay: 0.2, type: "spring", stiffness: 120 }}
-              >
-                <h2 className={styles.servicoTitle}>{servico.tipo}</h2>
+              <motion.div key={servico.id} className={styles.card}>
+                <h2 className={styles.cardTitle}>{servico.tipo}</h2>
+                <p className={styles.userInfo}>
+                  Usuário: {servico.user.nome} (ID: {servico.user.id})
+                </p>
+
                 <p
                   className={styles.detailsLink}
                   onClick={() => {
@@ -344,21 +391,32 @@ const MinhasDenuncias = () => {
                 </p>
                 {detalheServicoId === servico.id && (
                   <div className={styles.detalhes}>
-                    <p>Endereço: {servico.endereco}</p>
+                    <p className={styles.cardDescription}>
+                      Descrição: {servico.descricao}
+                    </p>
+                    <p className={styles.status}>
+                      Endereço: {servico.endereco}
+                    </p>
+                    <p className={styles.complemento}>
+                      Complemento: {servico.complemento}
+                    </p>
                     <img
-                      src={servico.foto}
-                      alt="Foto do Serviço"
+                      src={"http://localhost:3001/uploads/" + servico.imageUrl}
+                      alt="Foto da Denúncia"
                       className={styles.servicoFoto}
                     />
-                    <div className={styles.mapContainer}>
-                      <MapComponentWithNoSSR
-                        localizacaoInicial={{
-                          lat: servico.latitude,
-                          lon: servico.longitude,
-                        }}
-                        readOnly={true}
-                      />
-                    </div>
+
+                    {servico.location && (
+                      <div className={styles.mapPlaceholder}>
+                        <MapComponentWithNoSSR
+                          localizacaoInicial={{
+                            lat: servico.location.coordinates[1],
+                            lon: servico.location.coordinates[0],
+                          }}
+                          readOnly={true}
+                        />
+                      </div>
+                    )}
                     <div>
                       <label htmlFor="Status">Status:</label>
                       <select
@@ -397,23 +455,24 @@ const MinhasDenuncias = () => {
                       </select>
                     </div>
 
-                    <p className={styles.servicoDescription}>
-                      {servico.descricao}
-                    </p>
-                    <motion.button
-                      onClick={() => {
-                        statusS(statusSer, servico.id)
-                      }}
-                    >
-                      Alterar
-                    </motion.button>
-                    <motion.button
-                      onClick={() => {
-                        delS(servico.id)
-                      }}
-                    >
-                      Excluir
-                    </motion.button>
+                    <div className={styles.statusButtons}>
+                      <motion.button
+                        className={styles.submitButton}
+                        onClick={() => {
+                          statusS(statusSer, servico.id)
+                        }}
+                      >
+                        Alterar
+                      </motion.button>
+                      <motion.button
+                        className={styles.deleteButton}
+                        onClick={() => {
+                          delS(servico.id)
+                        }}
+                      >
+                        Excluir
+                      </motion.button>
+                    </div>
                   </div>
                 )}
               </motion.div>

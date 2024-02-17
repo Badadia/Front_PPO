@@ -124,9 +124,10 @@
   border: 3px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-top: 20px;
+  margin-top: 5px;
   transition: all 0.3s ease-in-out;
   overflow: hidden;
+  
 }
 
 .submitButton {
@@ -161,4 +162,8 @@
 .mensagemSucesso {
   color: green;
   margin-top: 10px;
+}
+.fileInputContainer{
+  margin-top: 5px;
+  margin-bottom: 10px;
 }

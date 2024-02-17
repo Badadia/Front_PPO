@@ -1,9 +1,13 @@
-import React from "react";
-import Link from "next/link";
-import styles from "./styles/contato.module.css"; // Ajuste o caminho conforme necessário
-import { motion } from "framer-motion";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPhone, faEnvelope, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import React from "react"
+import Link from "next/link"
+import styles from "./styles/contato.module.css" // Ajuste o caminho conforme necessário
+import { motion } from "framer-motion"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import {
+  faPhone,
+  faEnvelope,
+  faMapMarkerAlt,
+} from "@fortawesome/free-solid-svg-icons"
 
 const Contato = () => {
   return (
@@ -27,19 +31,23 @@ const Contato = () => {
       <div className={styles.contactSection}>
         <h2>Entre em Contato Conosco</h2>
 
-     
         <div className={styles.contactInfo}>
-          <p><FontAwesomeIcon icon={faMapMarkerAlt} /> Endereço: Rua Exemplo, 123, Cidade</p>
+          <p>
+            <FontAwesomeIcon icon={faMapMarkerAlt} /> Endereço: Avenida Santo
+            Antônio, Rua Rosa Branca, 193,Garanhuns-PE
+          </p>
 
-          <p><FontAwesomeIcon icon={faPhone} /> Telefone: (00) 1234-5678</p>
-          
-          <p><FontAwesomeIcon icon={faEnvelope} /> Email: contato@gusalert.com</p>
+          <p>
+            <FontAwesomeIcon icon={faPhone} /> Telefone: (87) 98149-7128
+          </p>
+
+          <p>
+            <FontAwesomeIcon icon={faEnvelope} /> Email: GusAlert@gmail.com
+          </p>
         </div>
-
-        
       </div>
     </motion.div>
-  );
-};
+  )
+}
 
-export default Contato;
+export default Contato

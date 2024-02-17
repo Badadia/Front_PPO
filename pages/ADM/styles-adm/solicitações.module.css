@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
 
 .container {
   display: flex;
@@ -10,11 +10,11 @@
   background: linear-gradient(45deg, #333, #555);
   color: #d8cfcf;
   padding: 20px;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
 }
 
 .logo {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   font-size: 36px;
   margin-bottom: 20px;
   cursor: pointer;
@@ -64,77 +64,63 @@
   transition: all 0.3s ease-in-out;
 }
 
-
-.list {
-  width: 100%;
+.denunciasList,
+.servicosList {
+  width: 80%;
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 20px;
-  justify-content: center;
 }
 
-
 .card {
-  background-color: #FFD166;
+  position: relative;
+  background-color: #ffd166;
   padding: 20px;
   border-radius: 5px;
-  transition: background-color 0.3s ease-in-out;
-  width: 300px; 
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  transition: transform 0.3s ease-in-out;
+  overflow: hidden;
+  width: 100%;
+  max-width: 800px;
 }
 
 .card:hover {
   background-color: #fcbf49;
+  transform: translateY(-5px);
 }
 
 .cardTitle {
   font-size: 20px;
   color: #333;
+  margin-bottom: 15px;
 }
 
 .cardDescription {
-  color: #333;
-  display: none; 
+  color: whitesmoke;
 }
 
-.cardDetailsLink {
+.detailsLink {
   color: #333;
   text-decoration: none;
   padding: 10px 20px;
-  background-color: #06D6A0;
+  background-color: #06d6a0;
   border-radius: 5px;
   transition: background-color 0.3s ease-in-out;
-  display: block; 
-  text-align: center; 
-  margin-top: 10px; 
 }
 
-.cardDetailsLink:hover {
+.detailsLink:hover {
   background-color: #04b582;
   color: white;
 }
 
-
-.moreButton {
-  padding: 10px 20px;
-  background-color: #06D6A0;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
-  display: block; 
-  width: 200px; 
-  margin: 20px auto; 
-}
-
-.moreButton:hover {
-  background-color: #04b582;
+.noDenuncias {
+  color: #ccc;
 }
 
 .verButton {
   padding: 10px 20px;
-  background-color: #FFD166;
+  background-color: #ffd166;
   color: #333;
   border: none;
   border-radius: 5px;
@@ -159,9 +145,162 @@
   margin-bottom: 20px;
 }
 
+.denunciaFoto,
+.servicoFoto {
+  max-width: 400px;
+  max-height: 400px;
+  width: auto;
+  height: auto;
+}
+.status {
+  color: black;
+}
+.submitButton {
+  padding: 3px 3px;
+  background-color: #39e436;
+  color: #333;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+  margin-top: 20px;
+  margin-left: 15px;
+}
 
-.mapContainer {
+.submitButton:hover {
+  background-color: #fcbf49;
+}
+.userInfo {
+  color: #2952db;
+  font-weight: bold;
+}
+
+.detalhes {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.detalhes button {
+  align-self: center;
   margin-top: 10px;
 }
 
+.endereco {
+  font-family: "Courier New", Courier, monospace;
+  color: #a777e3;
+}
+.actionButton {
+  padding: 5px 15px;
+  margin: 5px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
 
+.actionButton.alterar {
+  background-color: #4caf50;
+}
+
+.actionButton.excluir {
+  background-color: #f44336;
+}
+
+.actionButton:hover {
+  opacity: 0.8;
+}
+
+.mostrarMaisBtn {
+  background-color: #3f51b5;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.mostrarMaisBtn:hover {
+  background-color: #303f9f;
+}
+.servicoDescription {
+  color: black;
+}
+.servicoFoto {
+  border: solid 2px black;
+}
+.denunciaFoto {
+  border: solid 2px black;
+}
+
+.cardDescription {
+  color: black;
+}
+
+.submitButton {
+  border: solid black 1px;
+  color: #ffffff;
+}
+.deleteButton {
+  border: solid black 1px;
+  color: red;
+}
+.status {
+  color: rgb(0, 0, 0);
+}
+.buttonsContainer {
+  flex-direction: column;
+  gap: 10px;
+}
+.statusButtons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.submitButton,
+.deleteButton {
+  flex: 1;
+  padding: 5px 10px;
+}
+.denunciaFoto,
+.servicoFoto {
+  width: 100%;
+  max-width: 500px;
+}
+.mapPlaceholder {
+  height: 400px;
+  width: 66%;
+}
+.card {
+  background-color: #ffd166;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.detalhesLadoALado {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.detalhesLadoALado > div,
+.detalhesLadoALado > img {
+  flex: 1;
+  margin-right: 20px;
+}
+.textoAoLadoDaImagem {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.detalhes {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.complemento {
+  margin-bottom: 10px;
+  color: #000000;
+}

@@ -20,30 +20,30 @@ const RealizarDenuncia = () => {
   const [setor, setSetor] = useState("")
   const [localizacao, setLocalizacao] = useState({ lat: null, lon: null })
   const [foto, setFoto] = useState(null)
+  const [complemento, setComplemento] = useState("")
 
   const setores = [
-    "Agricultura e Agroecologia",
-    "Carta de Serviços",
-    "Ciência e Tecnologia",
-    "Comércio e Serviços",
-    "Comissão Permanente de Licitação - CPL",
-    "Comunicações",
-    "Cultura",
-    "Desporto e Lazer",
-    "Direitos de Cidadania",
+   
+    
+  
+   
+
+   
+   
+  
+   
     "Energia",
     "Estradas",
-    "Habilitação",
-    "Indústria",
-    "Lei Geral de Proteção de Dados - LGPD",
-    "Organização Agrária",
-    "Ouvidoria",
-    "Previdência Social",
-    "Recursos Humanos",
+   
+   
+   
+  
+    
+    
+  
     "Saneamento",
-    "Saúde",
-    "Trabalho",
-    "Transporte",
+   
+   
     "Urbanismo",
   ]
   useEffect(() => {
@@ -55,12 +55,12 @@ const RealizarDenuncia = () => {
       const Horario = parseInt(DataAtual.valueOf() / 1000)
 
       if (decodedToken.role === "admin") {
-        router.push("/")
+   //   router.push("/")
       } else if (decodedToken.exp < Horario) {
-        router.push("/login")
+   //   router.push("/login")
       }
     } else {
-      router.push("/login")
+ //   router.push("/login")
     }
   }, [router])
 
@@ -108,9 +108,10 @@ const RealizarDenuncia = () => {
     formData.append("setor", setor)
     formData.append("latitude", localizacao.lat)
     formData.append("longitude", localizacao.lon)
+    formData.append("complemento", complemento)
 
     if (foto) {
-      formData.append("foto", foto)
+      formData.append("file", foto)
     }
 
     try {
@@ -144,6 +145,7 @@ const RealizarDenuncia = () => {
           <span className={styles.alert}>Alert</span>
         </Link>
       </motion.div>
+      
 
       <div className={styles.formulario}>
         <input
@@ -151,7 +153,14 @@ const RealizarDenuncia = () => {
           type="text"
           placeholder="Endereço do problema"
           value={infoRua}
-          readOnly
+        />
+        
+        <input
+          className={styles.input}
+          type="text"
+          placeholder="Complemento"
+          value={complemento}
+          onChange={(e) => setComplemento(e.target.value)}
         />
         <textarea
           className={styles.textarea}
@@ -177,13 +186,17 @@ const RealizarDenuncia = () => {
             ))}
           </select>
         </div>
-
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setFoto(e.target.files[0])}
-        />
-        <div id="map" className={styles.mapPlaceholder}>
+        Anexe uma foto do problema:
+        <div className={styles.fileInputContainer}>
+  <label htmlFor="fotoProblema"></label>
+  <input
+    type="file"
+    id="fotoProblema"
+    accept="image/*" 
+    onChange={handleFileChange}
+  />
+</div>
+Marque a localização do problema no mapa:   <div id="map" className={styles.mapPlaceholder}>
           <MapComponentWithNoSSR
             setLocalizacao={setLocalizacao}
             setInfoRua={setInfoRua}

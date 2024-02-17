@@ -57,3 +57,14 @@
 .heroContent h1, .heroContent p {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
+.heroContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.5); /* Cor de fundo preta com 50% de opacidade */
+  padding: 20px; /* Espaçamento interno para não colar o texto nas bordas */
+  border-radius: 10px; /* Bordas arredondadas para a máscara */
+}

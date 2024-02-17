@@ -21,10 +21,10 @@ const PerfilUsuario = () => {
   const [novoNome, setNovoNome] = useState("")
   const [novoTelefone, setNovoTelefone] = useState("")
   const [userInfo, setUserInfo] = useState({ nome: "", email: "" })
-  const [senhaAtual, setSenhaAtual] = useState("")
-  const [novaSenha, setNovaSenha] = useState("")
+
+  const [senha, setNovaSenha] = useState("")
   const { user, logout } = useAuth()
-  const [confirmarNovaSenha, setConfirmarNovaSenha] = useState("")
+
   const [exibirConfiguracoes, setExibirConfiguracoes] = useState(false)
   const [exibirAlterarNome, setExibirAlterarNome] = useState(false)
   const [exibirAlterarTelefone, setExibirAlterarTelefone] = useState(false)
@@ -40,20 +40,25 @@ const PerfilUsuario = () => {
       const Horario = parseInt(DataAtual.valueOf() / 1000)
 
       if (decodedToken.exp < Horario) {
-        router.push("/login")
+        // router.push("/login")
       } else {
         axios
           .get(`http://localhost:3001/user/${userId}`, {
             headers: { Authorization: `Bearer ${token}` },
           })
-          .then((response) => setUserInfo(response.data))
+          .then((response) => {
+            setUserInfo(response.data)
+            // Atualiza os estados com os dados atuais do usuário
+            setNovoNome(response.data.nome)
+            setNovoTelefone(response.data.telefone.toString()) // Certifique-se de converter para string se necessário
+          })
           .catch((error) => {
             console.error("Erro ao buscar informações do usuário:", error)
-            router.push("/login")
+            // router.push("/login")
           })
       }
     } else {
-      router.push("/login")
+      // router.push("/login")
     }
   }, [router])
 
@@ -61,7 +66,7 @@ const PerfilUsuario = () => {
     const token = localStorage.getItem(TOKEN_LOCAL)
     try {
       await axios.patch(
-        `/user/${userInfo.id}`,
+        `http://localhost:3001/user/${userInfo.id}`,
         { nome: novoNome },
         { headers: { Authorization: `Bearer ${token}` } }
       )
@@ -77,10 +82,11 @@ const PerfilUsuario = () => {
     const token = localStorage.getItem(TOKEN_LOCAL)
     try {
       await axios.patch(
-        `/user/${userInfo.id}`,
+        `http://localhost:3001/user/${userInfo.id}`,
         { telefone: parsedFone },
         { headers: { Authorization: `Bearer ${token}` } }
       )
+      setUserInfo((prev) => ({ ...prev, telefone: novoTelefone }))
       alert("Telefone atualizado com sucesso")
     } catch (error) {
       console.error("Erro ao atualizar o telefone:", error)
@@ -88,23 +94,18 @@ const PerfilUsuario = () => {
   }
 
   const handleChangePassword = async () => {
-    if (novaSenha !== confirmarNovaSenha) {
-      alert("As senhas não coincidem!")
-      return
-    }
     const token = localStorage.getItem(TOKEN_LOCAL)
     try {
       await axios.patch(
-        `/user/${userInfo.id}/password`,
-        { senhaAtual, novaSenha },
+        `http://localhost:3001/user/${userInfo.id}`,
+        { senha },
         { headers: { Authorization: `Bearer ${token}` } }
       )
       alert("Senha alterada com sucesso")
-      setSenhaAtual("")
       setNovaSenha("")
-      setConfirmarNovaSenha("")
     } catch (error) {
       console.error("Erro ao mudar a senha:", error)
+      alert("Erro ao tentar alterar a senha.")
     }
   }
 
@@ -115,7 +116,7 @@ const PerfilUsuario = () => {
     if (!confirmacao) return
     const token = localStorage.getItem(TOKEN_LOCAL)
     try {
-      await axios.delete(`/user/${userInfo.id}`, {
+      await axios.delete(`http://localhost:3001/user/${userInfo.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       localStorage.removeItem(TOKEN_LOCAL)
@@ -123,6 +124,25 @@ const PerfilUsuario = () => {
       router.push("/login")
     } catch (error) {
       console.error("Erro ao excluir a conta:", error)
+    }
+  }
+  const handleChangeNomeTelefone = async () => {
+    const token = localStorage.getItem(TOKEN_LOCAL)
+    const parsedFone = parseInt(novoTelefone)
+    try {
+      await axios.patch(
+        `http://localhost:3001/user/${userInfo.id}`,
+        { nome: novoNome, telefone: parsedFone },
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      setUserInfo((prev) => ({
+        ...prev,
+        nome: novoNome,
+        telefone: novoTelefone,
+      }))
+      alert("Informações atualizadas com sucesso")
+    } catch (error) {
+      console.error("Erro ao atualizar informações:", error)
     }
   }
 
@@ -157,131 +177,73 @@ const PerfilUsuario = () => {
       <p>Nome: {userInfo.nome}</p>
       <p>Email: {userInfo.email}</p>
 
+      {/* Opções de configuração visíveis desde o início */}
       <div className={styles.buttonsContainer}>
-        <button onClick={toggleConfiguracoes} className={styles.perfilButton}>
+        {/* Campos para alterar nome e telefone */}
+        <div className={styles.configSection}>
+          <label>Alterar nome:</label>
+          <input
+            type="text"
+            value={novoNome}
+            onChange={(e) => setNovoNome(e.target.value)}
+            placeholder="Novo nome"
+          />
+
+          <label>Alterar telefone:</label>
+          <input
+            type="tel"
+            value={novoTelefone}
+            onChange={(e) => setNovoTelefone(e.target.value)}
+            placeholder="Novo telefone"
+          />
+
+          <button
+            onClick={handleChangeNomeTelefone}
+            className={styles.perfilButton}
+          >
+            Atualizar Informações
+          </button>
+        </div>
+
+        {/* Campo para alterar a senha */}
+        <div className={styles.configSection}>
+          <label>Alterar senha:</label>
+          <input
+            type="password"
+            value={senha}
+            onChange={(e) => setNovaSenha(e.target.value)}
+            placeholder="Nova Senha"
+          />
+
+          <button
+            onClick={handleChangePassword}
+            className={styles.confirmButton}
+          >
+            Atualizar Senha
+          </button>
+        </div>
+
+        {/* Seção para excluir a conta */}
+        <button
+          onClick={handleExcluirConta}
+          className={styles.perfilButtonDanger}
+        >
           <FontAwesomeIcon
-            icon={faUserEdit}
+            icon={faTrashAlt}
             className={styles.perfilButtonIcon}
           />
-          Configurações
+          Excluir Conta
         </button>
 
-        {exibirConfiguracoes && (
-          <>
-            {/* Seção para alterar o nome */}
-            <button onClick={toggleAlterarNome} className={styles.perfilButton}>
-              <FontAwesomeIcon
-                icon={faUserEdit}
-                className={styles.perfilButtonIcon}
-              />
-              Alterar Nome
-            </button>
-            {exibirAlterarNome && (
-              <div>
-                <input
-                  type="text"
-                  value={novoNome}
-                  onChange={(e) => setNovoNome(e.target.value)}
-                  placeholder="Novo nome"
-                />
-                <button
-                  onClick={handleChangeNome}
-                  className={styles.perfilButton}
-                >
-                  Atualizar Nome
-                </button>
-              </div>
-            )}
-
-            {/* Seção para alterar o telefone */}
-            <button
-              onClick={toggleAlterarTelefone}
-              className={styles.perfilButton}
-            >
-              <FontAwesomeIcon
-                icon={faPhone}
-                className={styles.perfilButtonIcon}
-              />
-              Alterar Telefone
-            </button>
-            {exibirAlterarTelefone && (
-              <div>
-                <input
-                  type="tel"
-                  value={novoTelefone}
-                  onChange={(e) => setNovoTelefone(e.target.value)}
-                  placeholder="Novo telefone"
-                />
-                <button
-                  onClick={handleChangeTelefone}
-                  className={styles.perfilButton}
-                >
-                  Atualizar Telefone
-                </button>
-              </div>
-            )}
-
-            {/* Seção para alterar a senha */}
-            <button
-              onClick={toggleAlterarSenha}
-              className={styles.perfilButton}
-            >
-              <FontAwesomeIcon
-                icon={faKey}
-                className={styles.perfilButtonIcon}
-              />
-              Alterar Senha
-            </button>
-            {exibirAlterarSenha && (
-              <div className={styles.changePasswordSection}>
-                <input
-                  type="password"
-                  value={senhaAtual}
-                  onChange={(e) => setSenhaAtual(e.target.value)}
-                  placeholder="Senha Atual"
-                />
-                <input
-                  type="password"
-                  value={novaSenha}
-                  onChange={(e) => setNovaSenha(e.target.value)}
-                  placeholder="Nova Senha"
-                />
-                <input
-                  type="password"
-                  value={confirmarNovaSenha}
-                  onChange={(e) => setConfirmarNovaSenha(e.target.value)}
-                  placeholder="Confirmar Nova Senha"
-                />
-                <button
-                  onClick={handleChangePassword}
-                  className={styles.perfilButton}
-                >
-                  Alterar Senha
-                </button>
-              </div>
-            )}
-
-            {/* Seção para excluir a conta */}
-            <button
-              onClick={handleExcluirConta}
-              className={styles.perfilButton}
-            >
-              <FontAwesomeIcon
-                icon={faTrashAlt}
-                className={styles.perfilButtonIcon}
-              />
-              Excluir Conta
-            </button>
-          </>
-        )}
+        {/* Botão de Logout */}
+        <button onClick={handleLogout} className={styles.confirmButton}>
+          <FontAwesomeIcon
+            icon={faSignOutAlt}
+            className={styles.perfilButtonIcon}
+          />
+          Logout
+        </button>
       </div>
-      <button onClick={handleLogout} className={styles.perfilButton}>
-        <FontAwesomeIcon
-          icon={faSignOutAlt}
-          className={styles.perfilButtonIcon}
-        />
-        Logout
-      </button>
     </div>
   )
 }

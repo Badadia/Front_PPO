@@ -10,23 +10,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEye, faWrench, faTools } from "@fortawesome/free-solid-svg-icons"
 import { useRouter } from "next/router"
 
-const MapComponentWithNoSSR = dynamic(() => import("./MapComponent"), {
-  ssr: false,
-  loading: () => <p>Carregando mapa...</p>,
-})
-
 const MinhasDenuncias = () => {
-  const router = useRouter()
-  const [verificarD, setVerificarD] = useState(false)
-  const [verificarS, setVerificarS] = useState(false)
-  const [denuncias, setDenuncias] = useState([])
-  const [servicos, setServicos] = useState([])
-  const [filtro, setFiltro] = useState("")
-  const [detalheDenunciaId, setDetalheDenunciaId] = useState(null)
-  const [detalheServicoId, setDetalheServicoId] = useState(null)
-  const [exibirMaisDenuncias, setExibirMaisDenuncias] = useState(false)
-  const [exibirMaisServicos, setExibirMaisServicos] = useState(false)
+  const router = useRouter();
+  const [verificarD, setVerificarD] = useState(false);
+  const [verificarS, setVerificarS] = useState(false);
+  const [denuncias, setDenuncias] = useState([]);
+  const [servicos, setServicos] = useState([]);
+  const [filtro, setFiltro] = useState("");
+  const [detalheDenunciaId, setDetalheDenunciaId] = useState(null);
+  const [detalheServicoId, setDetalheServicoId] = useState(null);
+  const [exibirMaisDenuncias, setExibirMaisDenuncias] = useState(false);
+  const [exibirMaisServicos, setExibirMaisServicos] = useState(false);
 
+  const MapComponentWithNoSSR = dynamic(() => import("./MapComponent"), {
+    ssr: false,
+    loading: () => <p>Carregando mapa...</p>,
+  });
   useEffect(() => {
     const token = localStorage.getItem(TOKEN_LOCAL)
 
@@ -37,9 +36,9 @@ const MinhasDenuncias = () => {
       const Horario = parseInt(DataAtual.valueOf() / 1000)
 
       if (decodedToken.role === "admin") {
-        router.push("/")
+       // router.push("/")
       } else if (decodedToken.exp < Horario) {
-        router.push("/login")
+      //  router.push("/login")
       } else {
         const fetchDenuncias = async () => {
           try {
@@ -71,7 +70,7 @@ const MinhasDenuncias = () => {
         fetchDenuncias()
       }
     } else {
-      router.push("/login")
+  //    router.push("/login")
     }
   }, [])
 
@@ -103,6 +102,16 @@ const MinhasDenuncias = () => {
     servico.tipo.toLowerCase().includes(filtro.toLowerCase())
   )
   console.log(filteredServicos)
+
+  const toggleVerificarD = () => {
+    setVerificarD(!verificarD)
+    setVerificarS(false)
+  }
+
+  const toggleVerificarS = () => {
+    setVerificarS(!verificarS)
+    setVerificarD(false)
+  }
   return (
     <motion.div
       className={styles.container}
@@ -121,6 +130,16 @@ const MinhasDenuncias = () => {
         </motion.h1>
       </Link>
       <h1 className={styles.title}>Minhas Solicitações</h1>
+      <div className={styles.buttonsContainer}>
+        <motion.button className={styles.verButton} onClick={toggleVerificarS}>
+          <FontAwesomeIcon icon={faWrench} className={styles.verButtonIcon} />
+          Ver Serviços
+        </motion.button>
+        <motion.button className={styles.verButton} onClick={toggleVerificarD}>
+          <FontAwesomeIcon icon={faEye} className={styles.verButtonIcon} />
+          Ver Denúncias
+        </motion.button>
+      </div>
       <input
         type="text"
         placeholder="Filtrar solicitações..."
@@ -129,121 +148,87 @@ const MinhasDenuncias = () => {
         className={styles.filterInput}
       />
 
-      {verificarD && (
-        <div className={styles.denunciasList}>
-          {filteredDenuncias
-            .slice(0, exibirMaisDenuncias ? filteredDenuncias.length : 8)
-            .map((denuncia) => (
-              <motion.div
-                key={denuncia.id}
-                className={styles.denunciaCard}
-                initial={{ x: "-100vw" }}
-                animate={{ x: 0 }}
-                transition={{ delay: 0.2, type: "spring", stiffness: 120 }}
-              >
-                <h2 className={styles.denunciaTitle}>{denuncia.tipo}</h2>
-
-                <p
-                  className={styles.detailsLink}
-                  onClick={() => handleDetalheClick(denuncia.id)}
-                >
-                  Ver Detalhes
-                </p>
-                {detalheDenunciaId === denuncia.id && (
-                  <div className={styles.detalhes}>
-                    <p>Endereço: {denuncia.endereco}</p>
-                    <img
-                      src={"http://localhost:3001/uploads/" + denuncia.imageUrl}
-                      alt="Foto da Denúncia"
-                      className={styles.denunciaFoto}
-                    />
-                    <div className={styles.mapContainer}>
-                      <MapComponentWithNoSSR
-                        localizacaoInicial={{
-                          lat: denuncia.latitude,
-                          lon: denuncia.longitude,
-                        }}
-                        readOnly={true}
-                      />
-                    </div>
-                    <p className={styles.servicoDescription}>
-                      {denuncia.descricao}
-                    </p>
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          {filteredDenuncias.length > 8 && !exibirMaisDenuncias && (
-            <button onClick={mostrarMaisDenuncias}>Ver Mais</button>
+{verificarD && (
+  <div className={styles.denunciasList}>
+    {filteredDenuncias
+      .slice(0, exibirMaisDenuncias ? filteredDenuncias.length : 8)
+      .map((denuncia) => (
+        <div key={denuncia.id} className={styles.card}>
+          <h2 className={styles.cardTitle}>{denuncia.setor}</h2>
+          <p className={styles.status}>Status: {denuncia.status}</p>
+          <p className={styles.detailsLink} onClick={() => handleDetalheClick(denuncia.id)}>
+            Ver Detalhes
+          </p>
+          {detalheDenunciaId === denuncia.id && (
+                
+            <div  className={styles.detalhes}>
+              <p className={styles.cardDescription}>Descrição: {denuncia.descricao}</p>
+              <p className={styles.status}>Endereço: {denuncia.endereco}</p>
+              <p className={styles.complemento}>Complemento: {denuncia.complemento}</p>
+             
+              <img src={"http://localhost:3001/uploads/" + denuncia.imageUrl} alt="Foto da Denúncia" className={styles.denunciaFoto} />
+              {denuncia.location && (
+                <div className={styles.mapPlaceholder}>
+                  <MapComponentWithNoSSR
+                    localizacaoInicial={{
+                      lat: denuncia.location.coordinates[1], 
+                      lon: denuncia.location.coordinates[0]
+                    }}
+                    readOnly={true}
+                  />
+                </div>
+              )}
+            </div>
           )}
         </div>
-      )}
-      <div className={styles.buttonsContainer}>
-        <motion.button
-          className={styles.verButton}
-          onClick={() => setVerificarS(!verificarS)}
-        >
-          <FontAwesomeIcon icon={faWrench} className={styles.verButtonIcon} />
-          Ver Serviços
-        </motion.button>
-        <motion.button
-          className={styles.verButton}
-          onClick={() => setVerificarD(!verificarD)}
-        >
-          <FontAwesomeIcon icon={faEye} className={styles.verButtonIcon} />
-          Ver Denúncias
-        </motion.button>
-      </div>
+      ))}
+    {filteredDenuncias.length > 8 && !exibirMaisDenuncias && (
+      <button onClick={mostrarMaisDenuncias}>Ver Mais</button>
+    )}
+  </div>
+)}
 
-      {verificarS && (
-        <div className={styles.servicosList}>
-          {filteredServicos
-            .slice(0, exibirMaisServicos ? filteredServicos.length : 8)
-            .map((servico) => (
-              <motion.div
-                key={servico.id}
-                className={styles.servicoCard}
-                initial={{ x: "-100vw" }}
-                animate={{ x: 0 }}
-                transition={{ delay: 0.2, type: "spring", stiffness: 120 }}
-              >
-                <h2 className={styles.servicoTitle}>{servico.tipo}</h2>
-
-                <p
-                  className={styles.detailsLink}
-                  onClick={() => handleDetalheClickServico(servico.id)}
-                >
-                  Ver Detalhes
-                </p>
-                {detalheServicoId === servico.id && (
-                  <div className={styles.detalhes}>
-                    <p>Endereço: {servico.endereco}</p>
-                    <img
-                      src={"http://localhost:3001/uploads/" + servico.imageUrl}
-                      alt="Foto do Serviço"
-                      className={styles.servicoFoto}
-                    />
-                    <div className={styles.mapContainer}>
-                      <MapComponentWithNoSSR
-                        localizacaoInicial={{
-                          lat: servico.latitude,
-                          lon: servico.longitude,
-                        }}
-                        readOnly={true}
-                      />
-                    </div>
-                    <p className={styles.denunciaDescription}>
-                      {servico.descricao}
-                    </p>
-                  </div>
-                )}
-              </motion.div>
-            ))}
-          {filteredServicos.length > 8 && !exibirMaisServicos && (
-            <button onClick={mostrarMaisServicos}>Ver Mais</button>
+{verificarS && (
+  <div className={styles.servicosList}>
+    {filteredServicos
+      .slice(0, exibirMaisServicos ? filteredServicos.length : 8)
+      .map((servico) => (
+        <div key={servico.id} className={styles.card}>
+          <h2 className={styles.cardTitle}>{servico.tipo}</h2>
+          <p className={styles.status}>Status: {servico.status}</p>
+          <p className={styles.detailsLink} onClick={() => handleDetalheClickServico(servico.id)}>
+            Ver Detalhes
+          </p>
+          {detalheServicoId === servico.id && (
+            <div  className={styles.detalhes}>
+              <p className={styles.cardDescription}>Descrição: {servico.descricao}</p>
+              <p className={styles.status}>Endereço: {servico.endereco}</p>
+              <p className={styles.complemento}>Complemento: {servico.complemento}</p>
+              
+              <img src={"http://localhost:3001/uploads/" + servico.imageUrl} alt="Foto do Serviço" className={styles.servicoFoto} />
+              {servico.location && (
+                <div className={styles.mapPlaceholder}>
+                  <MapComponentWithNoSSR
+                    localizacaoInicial={{
+                      lat: servico.location.coordinates[1], 
+                      lon: servico.location.coordinates[0]
+                    }}
+                    readOnly={true}
+                  />
+                </div>
+              )}
+            </div>
           )}
         </div>
-      )}
+      ))}
+    {filteredServicos.length > 8 && !exibirMaisServicos && (
+      <button onClick={mostrarMaisServicos}>Ver Mais</button>
+    )}
+  </div>
+)}
+
+
+      
     </motion.div>
   )
 }

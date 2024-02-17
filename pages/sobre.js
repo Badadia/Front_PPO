@@ -1,42 +1,43 @@
-import React, { useState } from "react";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import styles from "./styles/sobre.module.css"; // Ajuste o caminho conforme necessário
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faUsers, faBuilding, faPhone, faEnvelope, faGlobe } from '@fortawesome/free-solid-svg-icons';
-import { faInstagram, faGithub } from '@fortawesome/free-brands-svg-icons';
-
+import React, { useState } from "react"
+import Link from "next/link"
+import { motion } from "framer-motion"
+import styles from "./styles/sobre.module.css"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import {
+  faUsers,
+  faBuilding,
+  faPhone,
+  faEnvelope,
+  faGlobe,
+} from "@fortawesome/free-solid-svg-icons"
+import { faInstagram, faGithub } from "@fortawesome/free-brands-svg-icons"
 
 const Sobre = () => {
-  const [showTeam, setShowTeam] = useState(false);
-  const [showAboutSite, setShowAboutSite] = useState(false);
+  const [showTeam, setShowTeam] = useState(false)
+  const [showAboutSite, setShowAboutSite] = useState(false)
 
   const teamMembers = [
-    { 
-      name: "Bryan Belo", 
-      role: "Dev BackEnd", 
-      image: "/batata.jpg", 
+    {
+      name: "Bryan Belo",
+      image: "/batata.jpg",
       contact: "Bbn@discente.ifpe.edu.br",
       instagram: "@bryan_bello0",
-      github: "@Badadia"
+      github: "@Badadia",
     },
-    { 
-      name: "Gustavo de Lima", 
-      role: "Dev FrontEnd", 
-      image: "/guguinha.jpg", 
+    {
+      name: "Gustavo de Lima",
+      image: "/guguinha.jpg",
       contact: "gls9@discente.ifpe.edu.br",
       instagram: "@gustavolima.7",
-      github: "@gugiaa"
+      github: "@gugiaa",
     },
-    { 
-      name: "Adalberto Filho", 
-      role: "Dev BackEnd", 
-      image: "/Beto.jpg", 
+    {
+      name: "Adalberto Filho",
+      image: "/Beto.jpg",
       contact: "Assf@discente.ifpe.edu.br",
-      instagram: "@betttinho_silva"
-      // Adalberto não tem GitHub
-    }
-  ];
+      instagram: "@betttinho_silva",
+    },
+  ]
 
   return (
     <motion.div
@@ -60,14 +61,26 @@ const Sobre = () => {
           <div className={styles.teamSection}>
             {teamMembers.map((member, index) => (
               <div key={index} className={styles.teamMember}>
-                <img src={member.image} alt={member.name} className={styles.memberPhoto} />
+                <img
+                  src={member.image}
+                  alt={member.name}
+                  className={styles.memberPhoto}
+                />
                 <div className={styles.memberInfo}>
                   <h3>{member.name}</h3>
                   <p>{member.role}</p>
                   <p>{member.bio}</p>
-                  <p><FontAwesomeIcon icon={faEnvelope} /> {member.contact}</p>
-                  <p><FontAwesomeIcon icon={faInstagram} /> {member.instagram}</p>
-                  {member.github && <p><FontAwesomeIcon icon={faGithub} /> {member.github}</p>}
+                  <p>
+                    <FontAwesomeIcon icon={faEnvelope} /> {member.contact}
+                  </p>
+                  <p>
+                    <FontAwesomeIcon icon={faInstagram} /> {member.instagram}
+                  </p>
+                  {member.github && (
+                    <p>
+                      <FontAwesomeIcon icon={faGithub} /> {member.github}
+                    </p>
+                  )}
                 </div>
               </div>
             ))}
@@ -79,25 +92,31 @@ const Sobre = () => {
         </h2>
         {showAboutSite && (
           <div className={styles.aboutSiteSection}>
+            <h3>
+              Bem-vindo ao Portal da Cidadania de Garanhuns: O Seu Aliado para
+              uma Cidade Melhor!
+            </h3>
+            <p>
+              Na busca contínua por melhorar nossa querida cidade, este portal é
+              a sua principal ferramenta de voz ativa. Estamos dedicados a
+              tornar Garanhuns um lugar ainda melhor para se viver, e você é
+              parte essencial deste processo.
+            </p>
 
-            <h3>Bem-vindo ao Portal da Cidadania de Garanhuns: O Seu Aliado para uma Cidade Melhor!</h3>
-            <p>Na busca contínua por melhorar nossa querida cidade,
-               este portal é a sua principal ferramenta de voz ativa. 
-               Estamos dedicados a tornar Garanhuns um lugar ainda melhor 
-               para se viver, e você é parte essencial deste processo.</p>
-               
-               <h3>Denuncie e Solicite com Facilidade</h3>
-               
-               <p> Sua participação é vital. Com cada denúncia e solicitação,
-                 você contribui para a melhoria contínua de nossa cidade. 
-                 Este é o seu espaço para fazer a diferença em Garanhuns. Juntos, 
-                 podemos construir uma cidade mais segura, limpa e acolhedora para todos.</p>
-          
+            <h3>Denuncie e Solicite com Facilidade</h3>
+
+            <p>
+              {" "}
+              Sua participação é vital. Com cada denúncia e solicitação, você
+              contribui para a melhoria contínua de nossa cidade. Este é o seu
+              espaço para fazer a diferença em Garanhuns. Juntos, podemos
+              construir uma cidade mais segura, limpa e acolhedora para todos.
+            </p>
           </div>
         )}
       </div>
     </motion.div>
-  );
-};
+  )
+}
 
-export default Sobre;
+export default Sobre

@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans&display=swap");
 
 .perfilContainer {
   display: flex;
@@ -9,12 +9,13 @@
   padding: 20px;
   background: linear-gradient(45deg, #333, #555);
   color: #d8cfcf;
-  font-family: 'Open Sans', sans-serif;
+  font-family: "Open Sans", sans-serif;
+  
 }
 
 .perfilContainer h1 {
-  font-family: 'Roboto', sans-serif;
-  color: #FFD166;
+  font-family: "Roboto", sans-serif;
+  color: #ffd166;
   margin-bottom: 20px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
@@ -29,23 +30,25 @@
   max-width: 800px;
 }
 
-.input, .textarea {
-  padding: 12px 20px;
-  width: 100%;
-  border: none;
-  border-bottom: 2px solid #FFD166;
-  background-color: transparent;
-  color: white;
-  margin-bottom: 15px; /* Espaçamento entre os campos de senha */
+.input,
+.textarea,
+.perfilButton,
+.perfilButtonDanger,
+.confirmButton {
+  width: 90%; /* Largura dos campos e botões */
+  padding: 10px;
+  margin: 5px 0; /* Margem para separar os elementos */
+  border-radius: 8px; /* Bordas arredondadas */
 }
-
-.input:focus, .textarea:focus {
+.input:focus,
+.textarea:focus {
   border-color: #fcbf49;
   outline: none;
 }
 
-.submitButton, .configButton {
-  background-color: #FFD166;
+.submitButton,
+.configButton {
+  background-color: #ffd166;
   color: #333;
   border: none;
   border-radius: 5px;
@@ -53,24 +56,27 @@
   font-weight: bold;
   padding: 12px 20px;
   margin-top: 10px;
-  margin-bottom: 20px; /* Espaçamento extra após os botões */
+  margin-bottom: 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  transition: background-color 0.3s ease-in-out, box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
-  align-self: center; /* Centraliza os botões */
+  transition: background-color 0.3s ease-in-out, box-shadow 0.2s ease-in-out,
+    transform 0.2s ease-in-out;
+  align-self: center;
 }
 
-.submitButton:hover, .configButton:hover {
+.submitButton:hover,
+.configButton:hover {
   background-color: #fcbf49;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   transform: translateY(-3px);
 }
 
 .mensagemSucesso {
-  color: #4CAF50;
+  color: #4caf50;
   margin-top: 10px;
 }
 
-.gus, .alert {
+.gus,
+.alert {
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
 
@@ -85,14 +91,15 @@
 
 .perfilButton {
   padding: 10px 20px;
-  background-color: #FFD166;
+  background-color: #ffd166;
   color: #333;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 10px; /* Espaço entre ícone e texto */
+  margin-top: 20px;
+  gap: 10px;
   transition: background-color 0.3s ease-in-out;
 }
 
@@ -106,6 +113,59 @@
 
 .buttonsContainer {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 10px;
   margin-bottom: 20px;
+}
+.configSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+  gap: 10px;
+}
+
+.configSection input,
+.configSection button {
+  width: 90%;
+  margin-bottom: 10px;
+}
+/* ... Restante do CSS ... */
+
+.confirmButton {
+  background-color: #bf1c1c; /* Cor verde para o botão de confirmação */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 12px 20px;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease-in-out, box-shadow 0.2s ease-in-out,
+    transform 0.2s ease-in-out;
+  align-self: center;
+}
+
+.confirmButton:hover {
+  background-color: #43a047; 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
+}
+.input, .textarea, .perfilButton, .perfilButtonDanger, .confirmButton {
+  width: 100%; 
+  padding: 10px;
+  margin: 5px 0; 
+  border-radius: 8px;
+}
+.perfilButton,
+.perfilButtonDanger,
+.confirmButton {
+  cursor: pointer;
+  border: none;
+  font-weight: bold;
+  transition: background-color 0.3s, transform 0.2s;
 }
